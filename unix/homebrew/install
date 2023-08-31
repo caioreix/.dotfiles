@@ -1,0 +1,6 @@
+DOTFILES=$(dirname $0)/../..
+
+# This file does not install Homebrew, it only installs the apps. The Homebrew installation process is determined by the current operating system file.
+
+# Visual Studio Code (vscode)
+brew install --cask visual-studio-code

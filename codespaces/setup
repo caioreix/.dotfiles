@@ -1,0 +1,12 @@
+DOTFILES=$(dirname $0)/..
+source $DOTFILES/scripts/symlinks.sh
+
+# Setup default configurations
+$DOTFILES/unix/setup
+
+# Setup specific configurations
+echo "Creating codespaces symlinks"
+replace $DOTFILES codespaces
+
+# Source local configurations
+$DOTFILES/local/setup

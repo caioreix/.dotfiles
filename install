@@ -1,0 +1,16 @@
+DOTFILES=$(dirname $0)
+
+if [[ "$HOME" == "/home/codespace" ]]; then
+    echo "Starting Codespaces configuration."
+    $DOTFILES/codespace/setup
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    echo "Starting Linux dotfile installation."
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    echo "Starting Mac OSX dotfile installation."
+    $DOTFILES/darwin/install
+else
+    echo "Unknow system. Installation not started."
+    return
+fi
+
+echo "Installation finished."

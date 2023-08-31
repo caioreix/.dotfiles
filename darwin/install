@@ -1,0 +1,11 @@
+DOTFILES=$(dirname $0)/..
+
+# # Install Homebrew
+# /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# # Install the homebrew apps
+# $DOTFILES/unix/homebrew/install
+
+# Setup
+$DOTFILES/darwin/setup
