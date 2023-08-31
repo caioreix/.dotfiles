@@ -1,5 +1,6 @@
 DOTFILES=$(dirname $0)/..
 source $DOTFILES/scripts/symlinks.sh
+source $DOTFILES/scripts/log.sh
 
-echo "Creating unix symlinks"
+einfo "Creating unix symlinks"
 replace $DOTFILES unix

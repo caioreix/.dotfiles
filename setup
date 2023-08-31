@@ -1,0 +1,17 @@
+DOTFILES=$(dirname $0)
+source $DOTFILES/scripts/log.sh
+
+if [[ "$HOME" == "/home/codespace" ]]; then
+    estart "Codespaces configuration."
+    $DOTFILES/codespace/setup
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    estart "Linux dotfile configuration."
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    estart "Mac OSX dotfile configuration."
+    $DOTFILES/darwin/setup
+else
+    eerror "Unknow system. Configuration not started."
+    exit
+fi
+
+eend "Configuration finished."

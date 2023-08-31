@@ -1,0 +1,12 @@
+DOTFILES=$(dirname $0)/..
+source $DOTFILES/scripts/log.sh
+
+# Install homebrew apps
+$DOTFILES/unix/homebrew/install
+
+# Terminal configuration
+if [ ! -d ~/.oh-my-zsh ]; then
+
+else
+    ewarn "oh-my-zsh already installed"
+fi

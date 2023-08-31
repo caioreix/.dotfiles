@@ -1,4 +1,4 @@
-replace(){
+replace() {
     files=$(find $1/$2 -maxdepth 1 -type f -name ".*")
     for file in $files; do
         name=$(basename $file)
@@ -8,7 +8,7 @@ replace(){
     done
 }
 
-rsource(){
+rsource() {
     files=$(find $1/$2 -maxdepth 1 -type f -name ".*")
     for file in $files; do
         name=$(basename $file)

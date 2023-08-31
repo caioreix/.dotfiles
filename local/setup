@@ -1,6 +1,7 @@
 DOTFILES=$(dirname $0)/..
 source $DOTFILES/scripts/symlinks.sh
+source $DOTFILES/scripts/log.sh
 
 # Source local configurations
-echo "Sourcing local configurations"
+einfo "Sourcing local configurations"
 rsource $DOTFILES local
