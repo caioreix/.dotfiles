@@ -1,0 +1,3 @@
+CURR=$(dirname $0)
+
+find "$CURR" -maxdepth 1 \( -type f ! -name ".gitkeep" ! -name "clean" \) -o -type l -exec rm -rf {} \;

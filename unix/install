@@ -1,12 +1,28 @@
-DOTFILES=$(dirname $0)/..
+DOTFILES=$(readlink -f $(dirname $0)/..)
 source $DOTFILES/scripts/log.sh
 
-# Install homebrew apps
-$DOTFILES/unix/homebrew/install
-
-# Terminal configuration
-if [ ! -d ~/.oh-my-zsh ]; then
-
+# Install Oh-my-zsh
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 else
     ewarn "oh-my-zsh already installed"
 fi
+
+# Prepare fonts folder
+if [ ! -d "$HOME/.fonts" ]; then
+    mkdir -p $HOME/.fonts
+fi
+
+# Install Fira Code Nerdfonts
+# if [[ ! -n $(find "$FONTSFILE" -type f -name "FiraCodeNerdFont*" -print -quit) ]]; then
+#     # if find "$HOME/.fonts" -type f -name "FiraCodeNerdFont*" -print -quit &>/dev/null; then
+#     curl -LO https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/FiraCode.zip
+#     unzip FiraCode.zip -d Firacode
+#     mv Firacode/*.ttf $FONTSFILE/
+#     rm -r FiraCode.zip Firacode
+# else
+#     ewarn "FiraCodeNerdFont already installed"
+# fi
+
+# Install homebrew apps
+$DOTFILES/unix/homebrew/install

@@ -1,0 +1,12 @@
+DOTFILES=$(readlink -f $(dirname $0)/..)
+
+# Close any open System Preferences panes, to prevent them from overriding
+# settings we’re about to change
+osascript -e 'tell application "System Preferences" to quit'
+
+# Terminal preferences
+defaults write com.apple.Terminal "One Dark" -dict-add "Window Settings" -dict-add "$DOTFILES/darwin/profiles/onedark.terminal"
+# defaults import com.apple.Terminal $DOTFILES/darwin/profiles/onedark.terminal
+
+defaults write com.apple.Terminal "Default Window Settings" "One Dark"
+defaults write com.apple.Terminal "Startup Window Settings" "One Dark"

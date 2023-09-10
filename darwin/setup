@@ -1,4 +1,4 @@
-DOTFILES=$(dirname $0)/..
+DOTFILES=$(readlink -f $(dirname $0)/..)
 source $DOTFILES/scripts/symlinks.sh
 source $DOTFILES/scripts/log.sh
 
@@ -9,5 +9,6 @@ $DOTFILES/unix/setup
 einfo "Creating darwin symlinks"
 replace $DOTFILES darwin
 
-# Source local configurations
-$DOTFILES/local/setup
+# Setup macos preferences and defaults
+einfo "Setting up macos preferences and defaults"
+$DOTFILES/darwin/.macos

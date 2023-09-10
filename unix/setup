@@ -1,4 +1,4 @@
-DOTFILES=$(dirname $0)/..
+DOTFILES=$(readlink -f $(dirname $0)/..)
 source $DOTFILES/scripts/symlinks.sh
 source $DOTFILES/scripts/log.sh
 

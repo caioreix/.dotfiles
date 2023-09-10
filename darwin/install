@@ -1,4 +1,4 @@
-DOTFILES=$(dirname $0)/..
+DOTFILES=$(readlink -f $(dirname $0)/..)
 
 if ! command -v brew &>/dev/null; then
     # Install Homebrew

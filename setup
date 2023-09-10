@@ -1,4 +1,4 @@
-DOTFILES=$(dirname $0)
+DOTFILES=$(readlink -f $(dirname $0))
 source $DOTFILES/scripts/log.sh
 
 if [[ "$HOME" == "/home/codespace" ]]; then
@@ -15,3 +15,5 @@ else
 fi
 
 eend "Configuration finished."
+
+colored green "Restart your computer for the changes to start working. :)"

@@ -4,3 +4,6 @@ local/*
 
 old/*
 !old/.gitkeep
+!old/clean
+
+*.bak

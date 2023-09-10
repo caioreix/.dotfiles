@@ -1,8 +1,7 @@
-DOTFILES=$(dirname $0)/../..
+DOTFILES=$(readlink -f $(dirname $0)/../..)
 source $DOTFILES/scripts/log.sh
 
 # This file does not install Homebrew, it only installs the apps. The Homebrew installation process is determined by the current operating system file.
-
 if ! command -v brew &>/dev/null; then
     eerror "Homebrew not installed, install it first before install the apps."
     exit
@@ -13,6 +12,19 @@ if ! command -v git &>/dev/null; then
     brew install git
 else
     ewarn "Git already installed"
+fi
+
+# FiraCodeNerdFonts
+if ! brew list --cask font-fira-code-nerd-font &>/dev/null; then
+    brew tap homebrew/cask-fonts
+    brew install --cask font-fira-code-nerd-font
+fi
+
+# Starship
+if ! command -v starship &>/dev/null; then
+    brew install starship
+else
+    ewarn "Starship already installed"
 fi
 
 # Visual Studio Code (vscode)

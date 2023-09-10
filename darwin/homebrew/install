@@ -1,4 +1,4 @@
-DOTFILES=$(dirname $0)/../..
+DOTFILES=$(readlink -f $(dirname $0)/../..)
 source $DOTFILES/scripts/log.sh
 
 # This file does not install Homebrew, it only installs the apps. The Homebrew installation process is determined by the current operating system file.
