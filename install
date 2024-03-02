@@ -1,4 +1,6 @@
-DOTFILES=$(dirname $0)
+#!/bin/bash
+
+DOTFILES=$(realpath "$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )")
 source $DOTFILES/scripts/log.sh
 
 if [[ "$HOME" == "/home/codespace" ]]; then
@@ -6,6 +8,7 @@ if [[ "$HOME" == "/home/codespace" ]]; then
     exit
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     estart "Linux dotfile installation."
+    $DOTFILES/linux/install
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     estart "Mac OSX dotfile installation."
     $DOTFILES/darwin/install

@@ -13,3 +13,17 @@ if ! mdfind "kMDItemKind == 'Application'" | grep -i maccy.app &>/dev/null; then
 else
     ewarn "Maccy already installed"
 fi
+
+# Git
+if ! command -v git &>/dev/null; then
+    brew install git
+else
+    ewarn "Git already installed"
+fi
+
+# Visual Studio Code (vscode)
+if ! command -v code &>/dev/null; then
+    brew install --cask visual-studio-code
+else
+    ewarn "Vscode already installed"
+fi

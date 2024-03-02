@@ -1,10 +1,13 @@
+#!/bin/bash
+
 replace() {
     files=$(find $1/$2 -maxdepth 1 -type f -name ".*")
     for file in $files; do
         name=$(basename $file)
         mv -f "$HOME/$name" "$1/old/$name-$(date +%s%N)"
+        etrace "linking $1/$2/$name to $HOME/$name"
         ln -s $1/$2/$name $HOME/$name
-        source $HOME/$name
+        # source $HOME/$name
     done
 }
 

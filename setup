@@ -1,4 +1,6 @@
-DOTFILES=$(dirname $0)
+#!/bin/bash
+
+DOTFILES=$(realpath "$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )")
 source $DOTFILES/scripts/log.sh
 
 if [[ "$HOME" == "/home/codespace" ]]; then
@@ -6,6 +8,7 @@ if [[ "$HOME" == "/home/codespace" ]]; then
     $DOTFILES/codespace/setup
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     estart "Linux dotfile configuration."
+    $DOTFILES/linux/setup
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     estart "Mac OSX dotfile configuration."
     $DOTFILES/darwin/setup
@@ -14,4 +17,4 @@ else
     exit
 fi
 
-eend "Configuration finished."
+eend "Configuration finished. Restart the system to make sure all configurantions are done"

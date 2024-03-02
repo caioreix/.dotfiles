@@ -1,0 +1,16 @@
+#!/bin/bash
+
+DOTFILES=$(realpath "$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )/..")
+source $DOTFILES/scripts/symlinks.sh
+source $DOTFILES/scripts/log.sh
+
+# if [ ! -d "/usr/bin/zsh" ]; then
+#     ewarn "zsh is not installed"
+# else
+#     sudo chsh -s $(which zsh) $(whoami)
+# fi
+
+einfo $DOTFILES
+
+einfo "Creating linux symlinks"
+replace $DOTFILES linux

@@ -2,9 +2,6 @@ DOTFILES=$(dirname $0)/..
 source $DOTFILES/scripts/symlinks.sh
 source $DOTFILES/scripts/log.sh
 
-# Setup default configurations
-$DOTFILES/unix/setup
-
 # Setup specific configurations
 einfo "Creating darwin symlinks"
 replace $DOTFILES darwin

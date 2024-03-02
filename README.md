@@ -12,6 +12,8 @@ Use the local directory to add environment-specific source files.
 
 The overwritten files will be stored in an `old` folder in case of needing rollback.
 
+use `chmod +x file.name` to give run access
+
 ## Linux
 
 > WIP

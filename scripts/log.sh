@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Function: einfo(message, [prefix])
 einfo() {
     if [ -z "$2" ]; then
@@ -13,6 +15,15 @@ ewarn() {
         ecustom "$1" yellow WARN
     else
         ecustom "$1" yellow "$2"
+    fi
+}
+
+# Function: ewarn(message, [prefix])
+etrace() {
+    if [ -z "$2" ]; then
+        ecustom "$1" darkgrey TRACE
+    else
+        ecustom "$1" darkgrey "$2"
     fi
 }
 
@@ -59,15 +70,16 @@ colored() {
     PURPLE='\033[0;35m'
     CYAN='\033[0;36m'
     YELLOW='\033[1;33m'
+    DARKGREY='\033[1;30m'
     NC='\033[0m'
 
     UPPER=$(eval echo $1 | tr '[a-z]' '[A-Z]')
     COLOR=$(eval echo "\$$UPPER")
 
     if [ -z "$COLOR" ]; then
-        echo "$2"
+        echo -e "$2"
     else
-        echo "$COLOR$2$NC"
+        echo -e "$COLOR$2$NC"
     fi
 }
 
