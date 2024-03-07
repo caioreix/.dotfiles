@@ -12,6 +12,9 @@ elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     estart "Mac OSX dotfile configuration."
     $DOTFILES/darwin/setup
+elif [[ "$OSTYPE" == "msys"* ]]; then
+    estart "Windows dotfile configuration"
+    $DOTFILES/windows/setup
 else
     eerror "Unknow system. Configuration not started."
     exit

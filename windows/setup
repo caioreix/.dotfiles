@@ -1,0 +1,17 @@
+#!/bin/bash
+
+DOTFILES=$(realpath "$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )/..")
+source $DOTFILES/scripts/symlinks.sh
+source $DOTFILES/scripts/log.sh
+
+powershell -noprofile Set-ExecutionPolicy RemoteSigned
+
+profilePath=$(powershell -noprofile \$profile)
+path="$(echo "$DOTFILES/windows/.profile.ps1" | sed -e 's/^\///' -e 's/\//\\/g' -e 's/^./\0:/')"
+
+etrace "Moving profile to old backup"
+mv -f $profilePath $(echo "$DOTFILES/old/$(basename $profilePath)-$(date +%s%N)" | sed -e 's/^\///' -e 's/\//\\/g' -e 's/^./\0:/')
+etrace "Writing the new profile"
+echo "powershell -noprofile -nologo -NoExit -File $path" > "$profilePath"
+
+# New-Item -ItemType SymbolicLink -Path "$HOME\.dotfiles\windows\.profile.ps1" -Target "$HOME\.profile.ps1" -Force

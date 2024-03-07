@@ -12,8 +12,11 @@ elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     estart "Mac OSX dotfile installation."
     $DOTFILES/darwin/install
+elif [[ "$OSTYPE" == "msys"* ]]; then
+    estart "Windows dotfile installation"
+    $DOTFILES/windows/install
 else
-    eerror "Unknow system. Installation not started."
+    eerror "Unknow system: $OSTYPE. Installation not started."
     exit
 fi
 
