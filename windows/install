@@ -2,3 +2,22 @@
 
 DOTFILES=$(realpath "$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )/..")
 source $DOTFILES/scripts/log.sh
+
+# Install choco
+if ! command -v choco &>/dev/null; then
+    powershell -noprofile "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
+else
+    ewarn "choco already installed"
+fi
+
+if ! command -v git &>/dev/null; then
+    powershell -noprofile choco install git -y
+else
+    ewarn "git already installed"
+fi
+
+if ! command -v starship &>/dev/null; then
+    choco install starship -y
+else
+    ewarn "starship already installed"
+fi

@@ -6,9 +6,17 @@ replace() {
         name=$(basename $file)
         mv -f "$HOME/$name" "$1/old/$name-$(date +%s%N)"
         etrace "linking $1/$2/$name to $HOME/$name"
-        ln -s $1/$2/$name $HOME/$name
-        # source $HOME/$name
+        if [[ "$OSTYPE" == "msys"* ]]; then
+        echo ok
+            powershell -noprofile "New-Item -ItemType SymbolicLink -Path $(windowsPath "$HOME/$name") -Target $(windowsPath "$1/$2/$name") -Force"
+        else
+            ln -s $1/$2/$name $HOME/$name
+        fi
     done
+}
+
+windowsPath() {
+    echo $1 | sed -e 's/^\///' -e 's/\//\\/g' -e 's/^./\0:/'
 }
 
 rsource() {
