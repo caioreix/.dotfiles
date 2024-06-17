@@ -28,6 +28,8 @@ fi
 
 # Install gvm
 if ! command -v gvm &>/dev/null; then
+    sudo apt install binutils gcc make
+
     sudo apt-get install bison -y
     bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
 
