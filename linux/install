@@ -3,6 +3,20 @@
 DOTFILES=$(realpath "$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )/..")
 source $DOTFILES/scripts/log.sh
 
+
+# Install gcc and make if not installed
+if ! command -v gcc &>/dev/null; then
+    sudo apt install gcc -y
+else
+    ewarn "gcc already installed"
+fi
+
+if ! command -v make &>/dev/null; then
+    sudo apt install make -y
+else
+    ewarn "make already installed"
+fi
+
 # Install zsh
 if ! command -v zsh &>/dev/null; then
     sudo apt install zsh -y
@@ -17,13 +31,18 @@ else
     ewarn "oh-my-zsh already installed"
 fi
 
-# Install nvm
-if [ ! -d "$HOME/.nvm" ]; then
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-    nvm install --lts
-    sudo npm install -g pnpm
+# Install starship
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 else
-    ewarn "nvm already installed"
+    ewarn "oh-my-zsh already installed"
+fi
+
+# Install starship
+if ! command -v starship &>/dev/null; then
+    curl -sS https://starship.rs/install.sh | sh
+else
+    ewarn "starship already installed"
 fi
 
 # Install gvm

@@ -10,5 +10,7 @@ source $DOTFILES/scripts/log.sh
 #     sudo chsh -s $(which zsh) $(whoami)
 # fi
 
+chsh -s $(which zsh)
+
 einfo "Creating linux symlinks"
 replace $DOTFILES linux
