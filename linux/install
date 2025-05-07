@@ -3,108 +3,255 @@
 DOTFILES=$(realpath "$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )/..")
 source $DOTFILES/scripts/log.sh
 
-einfo "apt update"
-sudo apt update
+# Check for automatic install mode
+echo # Add a new line for better readability
+read -p "Do you want to run in the automatic installation mode? [yA/N] " -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[YyAa]$ ]]; then
+    AUTO_INSTALL="yes"
+    einfo "Running in automatic installation mode"
+else
+    AUTO_INSTALL=""
+    einfo "Running in interactive mode"
+fi
+
+APT_UPDATED=""
+
+# Define package variables
+build_essential="build-essential"
+binutils="binutils"
+gcc="gcc"
+make="make"
+brew="brew"
+zsh="zsh"
+oh_my_zsh="oh-my-zsh"
+starship="starship"
+asdf="asdf"
+golang="golang"
+nodejs="nodejs"
+pnpm="pnpm"
+docker="docker"
+
+# Function to check if user wants to install a package
+is_install_authorized() {
+    local package_name=$1
+
+    if [[ "$AUTO_INSTALL" == "yes" ]]; then
+        return 0
+    fi
+
+    read -p "Do you want to install $package_name? [yA/N] " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[YyAa]$ ]]; then
+        return 0
+    fi
+    return 1
+}
+
+is_installed() {
+    local package_name=$1
+
+    case "$package_name" in
+        "$build_essential")
+            dpkg -s build-essential &>/dev/null || return 1
+            ;;
+        "$binutils")
+            command -v ld &>/dev/null || return 1
+            ;;
+        "$gcc")
+            command -v gcc &>/dev/null || return 1
+            ;;
+        "$make")
+            command -v make &>/dev/null || return 1
+            ;;
+        "$brew")
+            command -v brew &>/dev/null || return 1
+            ;;
+        "$zsh")
+            command -v zsh &>/dev/null || return 1
+            ;;
+        "$oh_my_zsh")
+            [ -d "$HOME/.oh-my-zsh" ]|| return 1
+            ;;
+        "$starship")
+            command -v starship &>/dev/null || return 1
+            ;;
+        "$asdf")
+            command -v asdf &>/dev/null || return 1
+            ;;
+        "$golang")
+            command -v go &>/dev/null || return 1
+            ;;
+        "$nodejs")
+            command -v node &>/dev/null || return 1
+            ;;
+        "$pnpm")
+            command -v pnpm &>/dev/null || return 1
+            ;;
+        "$docker")
+            command -v docker &>/dev/null || return 1
+            ;;
+        *)
+            echo "Package not mapped: $package_name" >&2
+            return 1
+            ;;
+    esac
+
+    return 0
+}
+
+check_dependencies() {
+    local ok="true"
+    local package_name="$1"  # Store the package we're checking dependencies for
+    shift  # Remove the first argument (package name)
+
+    deps=""
+    for dep in "$@"; do
+        if ! is_installed "$dep"; then
+            deps+="$dep "
+            ok="false"
+        fi
+    done
+
+    if [ "$deps" != "" ]; then
+        deps=${deps% }
+        eerror "$deps are required to install $package_name"
+        return 1
+    fi
+
+    return 0
+}
+
+is_dependencies_installed(){
+    local package_name=$1
+
+    case "$package_name" in
+        "$oh_my_zsh")
+            check_dependencies "$package_name" $zsh
+            ;;
+        "$asdf")
+            check_dependencies "$package_name" $brew
+            ;;
+        "$golang")
+            check_dependencies "$package_name" $asdf
+            ;;
+        "$nodejs")
+            check_dependencies "$package_name" $asdf
+            ;;
+        "$pnpm")
+            check_dependencies "$package_name" $asdf $nodejs
+            ;;
+        *)
+            return 0
+            ;;
+    esac
+}
+
+should_install(){
+    local package_name=$1
+    if is_installed $package_name; then
+        ewarn "$package_name already installed" IGNORED
+        return 1
+    fi
+
+    if ! is_install_authorized $package_name; then
+        ewarn "$package_name" IGNORED
+        return 1
+    fi
+
+    if ! is_dependencies_installed $package_name; then
+        return 1
+    fi
+
+    einstall $package_name
+    if [ "$APT_UPDATED" != "true" ]; then
+        APT_UPDATED=true
+        sudo apt update # TODO uncomment
+    fi
+}
+
+# Install build-essential
+if should_install "build-essential"; then
+    sudo apt install build-essential -y
+fi
 
 # Install binutils
-if ! command -v ld &>/dev/null; then
-    einfo "Installing binutils"
-
+if should_install "binutils"; then
     sudo apt install binutils -y
-else
-    ewarn "binutils already installed"
 fi
 
 # Install gcc
-if ! command -v gcc &>/dev/null; then
-    einfo "Installing gcc"
-
+if should_install "gcc"; then
     sudo apt install gcc -y
-else
-    ewarn "gcc already installed"
 fi
 
 # Install make
-if ! command -v make &>/dev/null; then
-    einfo "Installing make"
-
+if should_install "make"; then
     sudo apt install make -y
-else
-    ewarn "make already installed"
 fi
 
-# Install bison (required by gvm)
-if command -v bison >/dev/null 2>&1; then
-    einfo "Installing make"
-
-    sudo apt install bison -y
-else
-    ewarn "bison already installed"
+# Install brew
+# Set up homebrew environment if is installed
+if [ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
+if should_install "brew"; then
+    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
 
 # Install zsh
-if ! command -v zsh &>/dev/null; then
-    einfo "Installing zsh"
-
+if should_install "zsh"; then
     sudo apt install zsh -y
-else
-    ewarn "zsh already installed"
 fi
 
 # Install Oh-my-zsh
-if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    einfo "Installing oh-my-zsh"
-
+if should_install "oh-my-zsh"; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-else
-    ewarn "oh-my-zsh already installed"
 fi
 
 # Install starship
-if ! command -v starship &>/dev/null; then
-    einfo "Installing starship"
-
+if should_install "starship"; then
     curl -sS https://starship.rs/install.sh | sh -s -- -y
-else
-    ewarn "starship already installed"
 fi
 
-# Install gvm
-if ! command -v gvm &>/dev/null; then
-    einfo "Installing gvm"
+# Install asdf
+# Set up asdf environment if is installed
+ASDF_PATH="/home/linuxbrew/.linuxbrew/opt/asdf/libexec/asdf.sh"
+if [ -f "$ASDF_PATH" ]; then
+    . "$ASDF_PATH"
+fi
+if should_install "asdf"; then
+    brew install asdf
+    . "$ASDF_PATH"
+fi
 
-    curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer | bash
+# Install golang
+if should_install "golang"; then
+    asdf plugin add golang
+    asdf install golang latest
+    asdf set golang latest
+    # chmod +x ${ASDF_DATA_DIR:-$HOME/.asdf}/plugins/golang/set-env.zsh
+fi
 
-    source ~/.gvm/scripts/gvm
+# Install nodejs
+if should_install "nodejs"; then
+    asdf plugin add nodejs
+    asdf install nodejs latest
+    asdf set nodejs latest
+fi
 
-    gvm install go1.4 -B
-    gvm use go1.4
-    export GOROOT_BOOTSTRAP=$GOROOT
-    gvm install go1.17.13
-    gvm use go1.17.13
-    export GOROOT_BOOTSTRAP=$GOROOT
-    gvm install go1.20.6
-    gvm use go1.20.6
-    export GOROOT_BOOTSTRAP=$GOROOT
-    gvm install go1.22.6
-    gvm use go1.22.6
-    export GOROOT_BOOTSTRAP=$GOROOT
-
-    lts=$(curl -s "https://go.dev/VERSION?m=text" | head -n 1)
-    gvm install $lts
-    gvm use $lts
-    gvm use $lts --default
-    export GOROOT_BOOTSTRAP=$GOROOT
-else
-    ewarn "gvm already installed"
+# Install pnpm
+if should_install "pnpm"; then
+    asdf plugin add pnpm https://github.com/technikhil314/asdf-pnpm.git
+    asdf install pnpm latest
+    asdf set pnpm latest
 fi
 
 # Install docker
-if ! command -v docker &>/dev/null; then
-    einfo "Installing docker"
-
-    sudo apt-get update
-    sudo apt-get install ca-certificates curl -y
+if should_install "docker"; then
+    sudo apt update
+    sudo apt install ca-certificates curl -y
     sudo install -m 0755 -d /etc/apt/keyrings -y
     sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
     sudo chmod a+r /etc/apt/keyrings/docker.asc
@@ -114,16 +261,14 @@ if ! command -v docker &>/dev/null; then
     "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
     $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
     sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-    sudo apt-get update
-    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+    sudo apt update
+    sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 
     sudo groupadd --system docker
     sudo adduser $USER docker
-    newgrp docker
-    sudo chown root:docker /var/run/docker.sock
-    sudo chmod g+w /var/run/docker.sock
-else
-    ewarn "docker already installed"
+    # newgrp docker
+    # sudo chown root:docker /var/run/docker.sock
+    # sudo chmod g+w /var/run/docker.sock
 fi
 
 # # Prepare fonts folder
@@ -141,3 +286,16 @@ fi
 # else
 #     ewarn "FiraCodeNerdFont already installed"
 # fi
+
+echo # Add a new line for better readability
+read -p "Do you want to run the setup script now? [yA/N] " -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[YyAa]$ ]]; then
+    if [ "$(getent passwd "$USER" | cut -d: -f7)" != "$(which zsh)" ]; then
+        einfo "Changing default shell ($(getent passwd "$USER" | cut -d: -f7)) to zsh ($(which zsh))"
+        chsh -s "$(which zsh)"
+    fi
+    $DOTFILES/linux/setup
+else
+    [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
+fi

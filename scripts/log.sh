@@ -9,6 +9,14 @@ einfo() {
     fi
 }
 
+einstall() {
+    if [ -z "$2" ]; then
+        ecustom "$1" blue INSTALLING
+    else
+        ecustom "$1" blue "$2"
+    fi
+}
+
 # Function: ewarn(message, [prefix])
 ewarn() {
     if [ -z "$2" ]; then
