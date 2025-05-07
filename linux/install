@@ -3,6 +3,9 @@
 DOTFILES=$(realpath "$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )/..")
 source $DOTFILES/scripts/log.sh
 
+einfo "apt update"
+sudo apt update
+
 # Install binutils
 if ! command -v ld &>/dev/null; then
     einfo "Installing binutils"
@@ -21,13 +24,22 @@ else
     ewarn "gcc already installed"
 fi
 
-# Intall make
+# Install make
 if ! command -v make &>/dev/null; then
     einfo "Installing make"
 
     sudo apt install make -y
 else
     ewarn "make already installed"
+fi
+
+# Install bison (required by gvm)
+if command -v bison >/dev/null 2>&1; then
+    einfo "Installing make"
+
+    sudo apt install bison -y
+else
+    ewarn "bison already installed"
 fi
 
 # Install zsh
@@ -52,7 +64,7 @@ fi
 if ! command -v starship &>/dev/null; then
     einfo "Installing starship"
 
-    curl -sS https://starship.rs/install.sh | sh
+    curl -sS https://starship.rs/install.sh | sh -s -- -y
 else
     ewarn "starship already installed"
 fi
@@ -61,8 +73,7 @@ fi
 if ! command -v gvm &>/dev/null; then
     einfo "Installing gvm"
 
-    sudo apt-get install bison -y
-    bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
+    curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer | bash
 
     source ~/.gvm/scripts/gvm
 
@@ -72,12 +83,16 @@ if ! command -v gvm &>/dev/null; then
     gvm install go1.17.13
     gvm use go1.17.13
     export GOROOT_BOOTSTRAP=$GOROOT
-    gvm install go1.20
-    gvm use go1.20
+    gvm install go1.20.6
+    gvm use go1.20.6
+    export GOROOT_BOOTSTRAP=$GOROOT
+    gvm install go1.22.6
+    gvm use go1.22.6
     export GOROOT_BOOTSTRAP=$GOROOT
 
     lts=$(curl -s "https://go.dev/VERSION?m=text" | head -n 1)
     gvm install $lts
+    gvm use $lts
     gvm use $lts --default
     export GOROOT_BOOTSTRAP=$GOROOT
 else
