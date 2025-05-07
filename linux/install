@@ -3,15 +3,28 @@
 DOTFILES=$(realpath "$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )/..")
 source $DOTFILES/scripts/log.sh
 
+# Install binutils
+if ! command -v ld &>/dev/null; then
+    einfo "Installing binutils"
 
-# Install gcc and make if not installed
+    sudo apt install binutils -y
+else
+    ewarn "binutils already installed"
+fi
+
+# Install gcc
 if ! command -v gcc &>/dev/null; then
+    einfo "Installing gcc"
+
     sudo apt install gcc -y
 else
     ewarn "gcc already installed"
 fi
 
+# Intall make
 if ! command -v make &>/dev/null; then
+    einfo "Installing make"
+
     sudo apt install make -y
 else
     ewarn "make already installed"
@@ -19,6 +32,8 @@ fi
 
 # Install zsh
 if ! command -v zsh &>/dev/null; then
+    einfo "Installing zsh"
+
     sudo apt install zsh -y
 else
     ewarn "zsh already installed"
@@ -26,13 +41,8 @@ fi
 
 # Install Oh-my-zsh
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-else
-    ewarn "oh-my-zsh already installed"
-fi
+    einfo "Installing oh-my-zsh"
 
-# Install starship
-if [ ! -d "$HOME/.oh-my-zsh" ]; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 else
     ewarn "oh-my-zsh already installed"
@@ -40,6 +50,8 @@ fi
 
 # Install starship
 if ! command -v starship &>/dev/null; then
+    einfo "Installing starship"
+
     curl -sS https://starship.rs/install.sh | sh
 else
     ewarn "starship already installed"
@@ -47,7 +59,7 @@ fi
 
 # Install gvm
 if ! command -v gvm &>/dev/null; then
-    sudo apt install binutils gcc make
+    einfo "Installing gvm"
 
     sudo apt-get install bison -y
     bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
@@ -74,6 +86,8 @@ fi
 
 # Install docker
 if ! command -v docker &>/dev/null; then
+    einfo "Installing docker"
+
     sudo apt-get update
     sudo apt-get install ca-certificates curl -y
     sudo install -m 0755 -d /etc/apt/keyrings -y
@@ -97,12 +111,12 @@ else
     ewarn "docker already installed"
 fi
 
-# Prepare fonts folder
-if [ ! -d "$HOME/.fonts" ]; then
-    mkdir -p $HOME/.fonts
-fi
+# # Prepare fonts folder
+# if [ ! -d "$HOME/.fonts" ]; then
+#     mkdir -p $HOME/.fonts
+# fi
 
-# Install Fira Code Nerdfonts
+# # Install Fira Code Nerdfonts
 # if [[ ! -n $(find "$FONTSFILE" -type f -name "FiraCodeNerdFont*" -print -quit) ]]; then
 #     # if find "$HOME/.fonts" -type f -name "FiraCodeNerdFont*" -print -quit &>/dev/null; then
 #     curl -LO https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/FiraCode.zip
