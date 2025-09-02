@@ -103,9 +103,6 @@ source $ZSH/oh-my-zsh.sh
 # brew
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
-# starship
-eval "$(starship init zsh)"
-
 # pnpm
 export PNPM_HOME="/home/caio/.local/share/pnpm"
 case ":$PATH:" in
@@ -116,5 +113,21 @@ esac
 # asdf
 . /home/linuxbrew/.linuxbrew/opt/asdf/libexec/asdf.sh
 
+autoload -U add-zsh-hook
+
 # golang
-# ${ASDF_DATA_DIR:-$HOME/.asdf}/plugins/golang/set-env.zsh
+. ${ASDF_DATA_DIR:-$HOME/.asdf}/plugins/golang/set-env.zsh
+golang_env_setup() {
+  [[ -n "$GOLANG_ENV_LOADED" ]] && return
+  export GOLANG_ENV_LOADED=1
+
+  case ":$PATH:" in
+    *":$GOBIN:"*) ;;
+    *) export PATH="$GOBIN:$PATH" ;;
+  esac
+}
+
+add-zsh-hook -Uz precmd golang_env_setup
+
+# starship
+eval "$(starship init zsh)"
