@@ -27,6 +27,7 @@ zsh="zsh"
 oh_my_zsh="oh-my-zsh"
 starship="starship"
 asdf="asdf"
+sdkman="sdkman"
 golang="golang"
 nodejs="nodejs"
 pnpm="pnpm"
@@ -78,6 +79,9 @@ is_installed() {
             ;;
         "$asdf")
             command -v asdf &>/dev/null || return 1
+            ;;
+        "$sdkman")
+            [ -d "$HOME/.sdkman" ] || return 1
             ;;
         "$golang")
             command -v go &>/dev/null || return 1
@@ -224,6 +228,12 @@ fi
 if should_install "asdf"; then
     brew install asdf
     . "$ASDF_PATH"
+fi
+
+# Install SDKMAN!
+if should_install "sdkman"; then
+    curl -s "https://get.sdkman.io" | bash
+    source "$HOME/.sdkman/bin/sdkman-init.sh"
 fi
 
 # Install golang
