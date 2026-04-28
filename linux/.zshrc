@@ -103,6 +103,9 @@ zstyle ':completion:*:*:make:*' tag-order 'targets'
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+# asdf
+. /home/linuxbrew/.linuxbrew/opt/asdf/libexec/asdf.sh
+
 # brew
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
@@ -113,27 +116,27 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 
-# asdf
-. /home/linuxbrew/.linuxbrew/opt/asdf/libexec/asdf.sh
+# autoload -U add-zsh-hook
 
-autoload -U add-zsh-hook
+# # golang
+# . ${ASDF_DATA_DIR:-$HOME/.asdf}/plugins/golang/set-env.zsh
+# golang_env_setup() {
+#   [[ -n "$GOLANG_ENV_LOADED" ]] && return
+#   export GOLANG_ENV_LOADED=1
 
-# golang
-. ${ASDF_DATA_DIR:-$HOME/.asdf}/plugins/golang/set-env.zsh
-golang_env_setup() {
-  [[ -n "$GOLANG_ENV_LOADED" ]] && return
-  export GOLANG_ENV_LOADED=1
+#   case ":$PATH:" in
+#     *":$GOBIN:"*) ;;
+#     *) export PATH="$GOBIN:$PATH" ;;
+#   esac
+# }
 
-  case ":$PATH:" in
-    *":$GOBIN:"*) ;;
-    *) export PATH="$GOBIN:$PATH" ;;
-  esac
-}
-
-add-zsh-hook -Uz precmd golang_env_setup
+# add-zsh-hook -Uz precmd golang_env_setup
+export PATH="$PATH:$(go env GOBIN)"
 
 # starship
 eval "$(starship init zsh)"
+
+alias copilot="copilot --yolo --deny-tool 'shell(git commit)' --deny-tool 'shell(git push)' --deny-tool 'shell(git reset)' --deny-tool 'shell(git rebase)' --deny-tool 'shell(git clean)' --deny-tool 'shell(rm)' --deny-tool 'shell(sudo)'"
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
